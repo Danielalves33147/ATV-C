@@ -1,0 +1,247 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include <locale.h>
+//Autor : Daniel Alves 3° Semestre 27/11/2022 APA
+//Qtd de linhas do codigo a ser lido + 1, usado no char de todas as funções, fica mais facil mudar a partir daqui
+// Ultima Atualização 15/02/2023
+#define endereco1 "C:\\Users\\Public\\BUSCA\\CODIGO1.txt" //Endereço do cod 1
+#define endereco2 "C:\\Users\\Public\\BUSCA\\CODIGO2.txt" //Endereço do cod 2
+
+#define execute1 "C:\\Users\\Public\\BUSCA\\execute11.exe" //Endereço do cod 1
+#define execute2 "C:\\Users\\Public\\BUSCA\\execute22.exe" //Endereço do cod 2
+
+#define linhas 300
+
+int contStru (FILE *arquivo){
+	char texto[200];
+	int strucss=0;
+	
+	while (fgets(texto,sizeof(texto),arquivo)!=NULL){
+		if (strstr(texto,"typedef") && strstr(texto,"struct")){
+			strucss++;
+		} else if(!strstr(texto,"typedef") && strstr(texto,"struct") && !strstr(texto,";")){
+			strucss++; 
+		} else if (strstr(texto,"}") && strstr(texto,";") && !strstr(texto,"(")){
+				strucss++;
+		}	
+	}
+	
+	fclose(arquivo);
+	return strucss;
+}
+
+void checaStru (char *funcao, char numEst[][30], FILE *arquivo){
+	char auxiliar[30],*palavra=NULL, texto[200];
+	int c=0;
+	
+	while (fgets(texto,sizeof(texto),arquivo)!=NULL){
+		if (strstr(texto,"typedef") && strstr(texto,"struct")){
+			palavra=strtok(texto," ");palavra=strtok(NULL," "); palavra=strtok(NULL," ");
+			if (!strstr(palavra,"\n ")){
+				if (strstr(palavra,"\n")){	
+					palavra=strtok(palavra," \n{");
+					strcpy(numEst[c],palavra); c++;
+				} else {
+					palavra=strtok(NULL," \n*;");
+					strcpy(numEst[c],palavra); c++;
+				}
+			}
+		} else if(!strstr(texto,"typedef") && strstr(texto,"struct") && !strstr(texto,";")){
+			palavra=strtok(texto," *"); palavra=strtok(NULL," *");
+			strcpy(numEst[c],palavra); c++;
+		} else if (strstr(texto,"}") && strstr(texto,";") && funcao==NULL){
+			palavra=strtok(texto," };\n*");
+			if (palavra!=NULL){
+				strcpy(numEst[c],palavra); c++;
+			}
+		}
+	}
+	
+	fclose(arquivo);
+}
+
+void concatenacao (char numEst[][30],int estr){
+	int c;
+	
+	for (c=0;c<estr;c++){
+		strcat(numEst[c]," ");
+	}
+}
+
+int diferenca(int a, int b){  //Calcula a diferença, por existirem termos interligados
+
+	if(a - b > 0){
+		a = a - b;
+	}
+	return a;
+}
+
+void syst(int i){
+	printf("\n\n\n");
+	double tempo = 0;           //tempo inicia zerado
+	clock_t inicio = clock();       //inicia a contagem do tempo
+	switch(i){
+		case 0:
+		printf("==>>Primeiro Executavel<<==");
+	system(execute1);	
+		break;
+		default:	
+		printf("==>>Segundo Executavel<<==");
+	system(execute2);
+		break; 
+		}
+    clock_t final = clock();                          //finaliza o tempo
+    tempo += (double)(final - inicio)/CLOCKS_PER_SEC; //da o resultado do tempo percorrido
+    printf("\nTempo de Compilacao: %f\n", tempo);     //printa o resultado do tempo
+}
+
+void cod(int i){
+	
+	double tempo = 0;               //tempo inicia zerado
+	clock_t inicio = clock();       //inicia a contagem do tempo
+	
+	
+    FILE *arq;
+	int qt_if=0,qt_else=0,qt_for=0,qt_do=0,qt_while=0,qt_eq=0,qt_entr=0,qt_elif=0;
+	int qt_eqex=0,qt_switch=0,qt_rec=0,estr=0,cont=0;                       //Declarando VARIAVEIS
+	int soma,form1,form2,simp,compost;
+	char str[linhas],*palavra=NULL,auxiliar[25]; 
+	
+		switch (i){ 
+		case 0: 
+		arq=fopen(endereco1,"r");
+		estr=contStru(arq);
+		arq=fopen(endereco1,"r");
+		break;
+		default: 
+		arq=fopen(endereco2,"r");
+		estr=contStru(arq);
+		arq=fopen(endereco2,"r");
+		break;
+	}
+	
+	char numEst[estr][30];
+	checaStru(palavra,numEst,arq);
+	concatenacao(numEst,estr);
+
+	switch(i){
+		case 0:
+		arq = fopen(endereco1,"r");
+		break;
+		default:
+		arq = fopen(endereco2,"r");
+		break; }
+		
+	
+	while(fgets(str,sizeof(str),arq)){                        //Percorre o texto
+		if(strstr(str,"if(") || strstr(str,"if (")){          //base para selecionar a palavra a ser procurada
+			qt_if++;                                          //quantidade das palavras
+		}
+		if(strstr(str,"else") || strstr(str," else")){        //base para selecionar a palavra a ser procurada
+			qt_else++;                                        //quantidade das palavras
+		}
+		if(strstr(str,"for(")  || strstr(str,"for (")){       //base para selecionar a palavra a ser procurada
+			qt_for++;                                         //quantidade das palavras
+		}
+		if(strstr(str,"}while(") || strstr(str,"}while (")){  //base para selecionar a palavra a ser procurada
+			qt_do++;                                          //quantidade das palavras
+		}
+		if(strstr(str,"while(") || strstr(str,"while (")){    //base para selecionar a palavra a ser procurada
+			qt_while++;                                       //quantidade das palavras
+		}
+		if(strstr(str,"switch(") || strstr(str,"switch (")){  //base para selecionar a palavra a ser procurada
+			qt_switch++;                                      //quantidade das palavras
+		}
+		if(strstr(str,"+") || strstr(str,"-")){               //base para selecionar a palavra a ser procurada
+			qt_eq++;                                          //quantidade das palavras
+		}else if(strstr(str,"=") && !strstr(str,"==")){ 
+			if(strstr(str,"/") || strstr(str,"*")){
+				qt_eq++;
+			}else{
+				qt_entr++;
+			}
+		}
+		if(strstr(str,"scanf")){           //base para selecionar a palavra a ser procurada
+			qt_entr++;                                        //quantidade das palavras
+		}
+	    if ((strstr(str,"int ") || strstr(str,"float ") || strstr(str,"double ") || strstr(str,"char ") || strstr(str,"void ")) && strstr(str,"(")){
+			palavra=strtok(str,"\t "); 
+			palavra=strtok(NULL," (");
+	        strcpy(auxiliar,palavra);
+		} else if (estr!=0){
+			for (cont=0;cont<estr;cont++){
+				if (strstr(str,numEst[cont]) && strstr(str,"(") && !strstr(str,";")){
+					palavra=strtok(str,"\t \n"); 
+					palavra=strtok(NULL,"\t ("); 
+			        strcpy(auxiliar,palavra);
+				}
+			}
+		} 
+		if (palavra!=NULL && strstr(str,auxiliar)){ 
+			int i,j=0;
+            for (i=0; i < strlen(str); i++){
+                if(str[i]==auxiliar[j]){
+                    j++;
+                }else{
+                    j=0;
+                }
+                if(j==strlen(auxiliar)){
+                    qt_rec++;
+                }
+            }
+			//printf("%s\n",str);
+		}
+	}
+	
+	fclose(arq);     //Fecha o arquivo
+	
+	
+	qt_rec=diferenca(qt_rec,qt_entr);
+	qt_if=diferenca(qt_if,qt_else);
+	qt_while=diferenca(qt_while,qt_do);
+	qt_eq=diferenca(qt_eq,qt_entr);
+	qt_eq=diferenca(qt_eq,qt_eqex);
+	
+	soma = qt_if+qt_else+(qt_for * 2)+(qt_do* 2)+(qt_while* 2)+qt_eq+qt_entr+qt_rec+qt_switch; //Soma geral
+	form1 = 2 * pow(soma,2) + 5 * soma;                    //Formula 1
+	form2 = 500 * soma + 4000;                             //Formula 2
+	simp = qt_if+qt_else+qt_eq+qt_entr+qt_rec+qt_switch;   //Soma Simples
+	compost = (qt_for * 2)+(qt_do* 2)+(qt_while* 2);       //Soma Composta
+	
+		switch(i){
+		case 0:
+		printf("\n\t==>>Primeiro Programa<<==\n");
+		break;
+		default:
+		printf("\n\t==>>Segundo Programa<<==\n");
+		break; 
+		}
+		
+	printf("\nQuantidade de passos: %i\n",soma);                                 //printa o resultado	
+    printf("\nA funcao If foi encontrada %d veze(s) no codigo.\n",qt_if);        //printa o resultado
+    printf("\nA funcao Else foi encontrada %d veze(s) no codigo.\n",qt_else);    //printa o resultado
+	printf("\nA funcao For foi encontrada %d veze(s) no codigo.\n",qt_for);      //printa o resultado
+	printf("\nA funcao Do/While foi encontrada %d veze(s) no codigo.\n",qt_do);  //printa o resultado
+	printf("\nA funcao While foi encontrada %d veze(s) no codigo.\n",qt_while);  //printa o resultado
+	printf("\nA funcao Switch foi encontrada %d veze(s) no codigo.\n",qt_switch);//printa o resultado
+	printf("\nEntrada de dados encontradas %d vezes no codigo.\n",qt_entr);      //printa o resultado
+	printf("\nRecursividades foram encontradas %d vezes no codigo.\n",qt_rec);   //printa o resultado
+	printf("\nEquacoes encontradas %d vezes no codigo.\n",qt_eq);                //printa o resultado
+	printf("\nTotal Simples : %i  \nTotal Compostas : %i\n",simp,compost);       //printa o resultado
+	printf("\nAlgoritmo 1 : %i operacoes\nAlgoritmo 2 : %i operacoes\n",form1,form2);
+	
+	clock_t final = clock();                          //finaliza o tempo
+    tempo += (double)(final - inicio)/CLOCKS_PER_SEC; //da o resultado do tempo percorrido
+    printf("\nTempo de Compilacao: %f\n", tempo);     //printa o resultado do tempo
+    
+    syst(i);
+}
+
+
+int main(){
+    cod(0);
+    cod(1);
+	return 0;
+}

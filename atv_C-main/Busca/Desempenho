@@ -1,0 +1,152 @@
+///////
+//BUSCA DE FUNÇÕES
+//////
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include <locale.h>
+
+//Autor : Daniel Alves 3° Semestre 27/11/2022 APA
+//Nessa Versão tem que apagar os comentarios, ou ao menos saber quantas vezes as palavras se repetem fora do codigo e subtrair no final
+//Contador de funções, para adicionar so copiar uma função e mudar a palavra no nome,onde percorre o texto e no printf final da função
+//BASECONTAGEM é o arquivo em que deve ser colado o codigo para verificação
+//Todas as funções seguem a mesma logica, então so comentei uma,para adicionar outra cpntagem ,basta copiar e colar e dps mudar os nomes
+
+#define linhas 153 //Qtd de linhas do codigo a ser lido + 1, usado no char de todas as funções, fica mais facil mudar a partir daqui
+
+int funcaoif_(){                                                                     
+	FILE *arq;                                                                       //Declarando Variaveis
+	char str[linhas];                                                               //Qtd de linhas do codigo a ser lido,usa o valor do Define
+	int qt_if = 0;                                                                 //Contador zerado
+	arq = fopen("C:\\Users\\Public\\BUSCA\\BASECONTAGEM.txt","r");                //Abre e lê o arquivo de texto designado
+	while(fgets(str,sizeof(str),arq) != NULL){                                   // Percorre o texto
+		if(strstr(str,"if(") != NULL || strstr(str,"if (") != NULL){            //base para selecionar a palavra a ser procurada
+			qt_if++;                                                           //quantidade das palavras
+		}
+	}
+	fclose(arq);                                                           //Fecha o arquivo
+    return qt_if;                                                         //Retorna o resultado
+}
+
+int funcaoelse(){
+	FILE *arq;
+	char str[linhas];
+	int qt_else = 0;
+	arq = fopen("C:\\Users\\Public\\BUSCA\\BASECONTAGEM.txt","r");
+	while(fgets(str,sizeof(str),arq) != NULL){
+		if(strstr(str,"}else") != NULL || strstr(str,"} else") != NULL ){
+			qt_else++;
+		}
+	}
+	fclose(arq);
+    return qt_else;
+}
+
+int funcaofor_(){
+	FILE *arq;
+	char str[linhas];
+	int qt_for = 0;
+	arq = fopen("C:\\Users\\Public\\BUSCA\\BASECONTAGEM.txt","r");
+	while(fgets(str,sizeof(str),arq) != NULL){
+		if(strstr(str,"for(") != NULL || strstr(str,"for (") != NULL){
+			qt_for++;
+		}
+	}
+	fclose(arq);
+    return qt_for;
+}
+
+int funcaodo(){
+	FILE *arq;
+	char str[linhas];
+	int qt_do = 0;
+	arq = fopen("C:\\Users\\Public\\BUSCA\\BASECONTAGEM.txt","r");
+	while(fgets(str,sizeof(str),arq) != NULL){
+		if(strstr(str,"}while(") != NULL || strstr(str,"}while (") != NULL){
+			qt_do++;
+		}
+	}
+	fclose(arq);
+    return qt_do;
+}
+
+int funcaowhile_(){
+	FILE *arq;
+	char str[linhas];
+	int qt_while = 0,a;
+	arq = fopen("C:\\Users\\Public\\BUSCA\\BASECONTAGEM.txt","r");
+	while(fgets(str,sizeof(str),arq) != NULL){
+		if(strstr(str,"while(") != NULL || strstr(str,"while (") != NULL){
+			qt_while++;
+		}
+	}
+	fclose(arq);
+    return qt_while;
+}
+
+int equacoes(){                                                                     
+	FILE *arq;                                                                      
+	char str[linhas];                                                               
+	int qt_eq = 0;                                                                
+	arq = fopen("C:\\Users\\Public\\BUSCA\\BASECONTAGEM.txt","r");               
+	while(fgets(str,sizeof(str),arq) != NULL){                                 
+		if(strstr(str,"+") != NULL | strstr(str,"-") != NULL){            
+			qt_eq++;                                                          
+		}
+	}
+	fclose(arq);                                                         
+    return qt_eq;                                                       
+}
+
+int algo1(int n){               //algoritmo 1
+int f;	
+	f = 2 * pow(n,2) + 5 * n; // algoritmo dado na aula, professor que escolheu
+	
+	return f;               //retorna o resultado
+}
+
+int algo2(int n){         //algoritmo 2 
+int f;	
+	f = 500 * n + 4000; // algoritmo dado na aula, professor que escolheu
+	
+	return f;         //retorna o resultado
+}
+
+int main(){
+	                                  //setlocale(LC_ALL, "Portuguese");
+	double tempo = 0;                //tempo inicia zerado
+	clock_t inicio = clock();       //inicia a contagem do tempo
+	int n,ag2,ag1,a,b,c,d,e,f,soma;//usei o abc pra n ficar grande, so serve para somar para usar nos algoritmos
+	
+// chamando as funções para retornar os valores
+a = funcaoif_();
+b = funcaoelse();
+c = funcaofor_();      //Peso 2 por ser um laço de repetição, vai ser adicionado na soma
+d = funcaodo();       //Peso 2 por ser um laço de repetição, vai ser adicionado na soma
+e = funcaowhile_();  //Peso 2 por ser um laço de repetição, vai ser adicionado na soma
+f = equacoes();
+e -= d;            // Subtrai por conta dos Whiles repetidos
+
+printf("\nA funcao If foi encontrada %d veze(s) no codigo.\n\n",a);         //printa o resultado
+printf("\nA funcao Else foi encontrada %d veze(s) no codigo.\n\n",b);      //printa o resultado
+printf("\nA funcao For foi encontrada %d veze(s) no codigo.\n\n",c);      //printa o resultado
+printf("\nA funcao Do/While foi encontrada %d veze(s) no codigo.\n\n",d);//printa o resultado
+printf("\nA funcao While foi encontrada %d veze(s) no codigo.\n\n",e);  //printa o resultado
+printf("\nEquacoes encontradas %d vezes no codigo.\n\n",f);            //printa o resultado
+                         
+n = a+b+(2*c)+(2*d)+(2*e);     // soma dos resultados e aplicação dos pesos
+
+ag1 = algo1(n);             // passa o valor de n para o primeiro algoritmo que retorna a reposta
+ag2 = algo2(n);            // passa o valor de n para o segundo algoritmo que retorna a reposta
+ 
+printf("Algoritmo 1 : %i operacoes\n",ag1);
+printf("Algoritmo 2 : %i operacoes\n",ag2);
+
+    clock_t final = clock();                            //finaliza o tempo
+    tempo += (double)(final - inicio) / CLOCKS_PER_SEC;//da o resultado do tempo percorrido
+ 
+    printf("\nTempo de Compilacao: %f", tempo);      //printa o resultado do tempo
+ 
+    return 0;
+}
